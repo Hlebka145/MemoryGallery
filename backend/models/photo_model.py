@@ -5,10 +5,12 @@ class Photo(Base):
     __tablename__ = 'photos'
     
     id = Column(Integer, primary_key=True)
-    year = Column(Integer, nullable=False)
-    grade = Column(Integer, nullable=False)
-    parallel = Column(String, nullable=False)
-    date = Column(Date, nullable=False)
+    date = Column(DateTime, nullable=False)
+    path = Column(String, nullable=False)
+
+    description = Column(String, nullable=True)
+    grade = Column(Integer, nullable=True)
+    parallel = Column(String, nullable=True)
 
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
