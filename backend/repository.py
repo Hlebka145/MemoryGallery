@@ -84,8 +84,8 @@ class UserRepository(BaseRepository[User]):
         return result.scalars().first()
     
     async def update_refresh_token(self, user_id: int, refresh_token: str, session: AsyncSession) -> Optional[User]:
-        user = await session.execute(select(self.model).where(self.model.id == user_id)) # Я убрал отсюда .scalars().first() и переместил на следующую строку,
-        user = user.scalars().first()#                                                     т.к. код ругался на то, что это курутина и у неё нет .scalars().first()
+        user = await session.execute(select(self.model).where(self.model.id == user_id))
+        user = user.scalars().first()
         if not user:
             return None
         user.refresh_token = refresh_token
@@ -102,14 +102,14 @@ class PhotoRepository(BaseRepository[Photo]):
     def get_model_name(self) -> str:
         return "Photo"
 
-    async def get_by_year(self, year: int, session: AsyncSession) -> list[Photo]:
-        result = await session.execute(select(self.model).where(self.model.year == year))
-        return result.scalars().all()
-    
+    async def get_by_path(self, path: str, session: AsyncSession) -> list[Photo]:
+        result = await session.execute(select(self.model).where(self.model.path == path))
+        return result.scalars().first()
+
     async def get_by_grade(self, grade: int, session: AsyncSession) -> list[Photo]:
         result = await session.execute(select(self.model).where(self.model.grade == grade))
         return result.scalars().all()
-    
+
     async def get_by_parallel(self, parallel: str, session: AsyncSession) -> list[Photo]:
         result = await session.execute(select(self.model).where(self.model.parallel == parallel))
         return result.scalars().all()
