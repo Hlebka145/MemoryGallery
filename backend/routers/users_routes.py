@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Path
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
 import service
-from schemas import UserCreateRequest, UserCreateResponse, UserReadRequest, UserReadResponse, UserUpdateRequest, UserUpdateResponse, UserDeleteRequest, UserDeleteResponse, ErrorResponse
+from schemas import UserReadRequest, UserReadResponse, UserUpdateRequest, UserUpdateResponse, UserDeleteRequest, UserDeleteResponse, ErrorResponse
 
 
 users_router = APIRouter(prefix="/users", tags=["Users"])

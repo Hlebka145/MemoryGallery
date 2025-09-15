@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field, field_validator, ConfigDict
-from fastapi import File, UploadFile
 from datetime import datetime
 import re
 from typing import Optional, List, Any, Dict
@@ -229,7 +228,6 @@ class PhotoModel(BaseModel):
     }
 
 class PhotoCreateRequest(BaseModel):
-    file: UploadFile = File(..., description="Сам файл фото")
     date: datetime = Field(..., description="Дата фото")
     description: str = Field(..., description="Описание фото")
     grade: int = Field(..., description="Класс на фото")
@@ -259,7 +257,7 @@ class PhotoCreateRequest(BaseModel):
                 "date": "2025-09-09", 
                 "description": "Фото 10А класса",
                 "grade": 10,
-                "parallel": "A"
+                "parallel": "А"
             }
         }
     }

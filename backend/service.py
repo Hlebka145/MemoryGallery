@@ -9,6 +9,7 @@ from auth_utils import hash_password, verify_password
 from repository import UserRepository, PhotoRepository
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+import os
 
 
 class UserService:
@@ -92,11 +93,11 @@ class PhotoService:
     def __init__(self):
         self.repository = PhotoRepository()
 
-    async def upload_photo(self, photo_data: schemas.PhotoCreateRequest, session: AsyncSession):
+    async def upload_photo(self, photo_data: schemas.PhotoCreateRequest, file: UploadFile, session: AsyncSession):
         # Создание пути к файлу и сохранение его на сервер
-        file_path = f"photos/{photo_data.file.filename}"
+        file_path = os.path.join("photos", file.filename)
         with open(file_path, "wb") as f:
-            f.write(await photo_data.file.read())
+            f.write(await file.read())
 
         photo = Photo(
             date = photo_data.date,
@@ -111,6 +112,7 @@ class PhotoService:
             await self.repository.create(photo, session)
             return {"message": "Photo uploaded successfully"}
         except IntegrityError as e:
+            os.remove(file_path)
             error_msg = str(e.orig)
             raise HTTPException(status_code=400, detail=f"Error uploading photo: {error_msg}")
     
@@ -142,8 +144,9 @@ class PhotoService:
             raise HTTPException(status_code=404, detail="Photo not found")
         return {"message": "Photo updated successfully"}
 
-    async def delete_photo(self, photo_id: int, session: AsyncSession):
+    async def delete_photo(self, photo_id: int, path: str, session: AsyncSession):
         result = await self.repository.delete(photo_id, session)
         if result["message"] == "Photo not found":
             raise HTTPException(status_code=404, detail="Photo not found")
+        os.remove(path)
         return result
