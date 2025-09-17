@@ -10,6 +10,7 @@ from repository import UserRepository, PhotoRepository
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import os
+import uuid
 
 
 class UserService:
@@ -94,8 +95,18 @@ class PhotoService:
         self.repository = PhotoRepository()
 
     async def upload_photo(self, photo_data: schemas.PhotoCreateRequest, file: UploadFile, session: AsyncSession):
+        # Проверка на правильность расширения файла
+        extensions = [".png", ".jpg", ".jpeg", ".raw", ".tiff"]
+        _, file_extension = os.path.splitext(file.filename)
+        for ext in extensions:
+            if file_extension.lower() == ext:
+                break
+        else:
+            raise HTTPException(status_code=400, detail=f"Invalid photo format")
+        
         # Создание пути к файлу и сохранение его на сервер
-        file_path = os.path.join("photos", file.filename)
+        file_name = f"{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join("photos", file_name)
         with open(file_path, "wb") as f:
             f.write(await file.read())
 
